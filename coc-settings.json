@@ -1,0 +1,7 @@
+{
+	"[java]": {
+		"semanticTokens.enable": true
+	},
+	"diagnostic.virtualText": false,
+	"diagnostic.checkCurrentLine": true
+}
