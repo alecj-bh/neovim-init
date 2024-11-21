@@ -2,10 +2,10 @@ vim.g.mapleader = ','
 
 vim.g.floaterm_shell = '/usr/local/microsoft/powershell/7/pwsh'
 vim.g.floaterm_position = 'topright'
-vim.g.floaterm_keymap_new    = '<F7>'
-vim.g.floaterm_keymap_prev   = '<F8>'
-vim.g.floaterm_keymap_next   = '<F9>'
-vim.g.floaterm_keymap_toggle = '<F12>'
+vim.g.floaterm_keymap_new    = '<leader>fw'
+vim.g.floaterm_keymap_prev   = '<leader>fp'
+vim.g.floaterm_keymap_next   = '<leader>fn'
+vim.g.floaterm_keymap_toggle = '<leader>ft'
 
 vim.keymap.set("n", "<c-j>", "<c-w>j")
 vim.keymap.set("n", "<c-k>", "<c-w>k")
@@ -36,7 +36,11 @@ vim.keymap.set("n", "<leader>cu", "<Plug>(coc-references-used)")
 
 vim.keymap.set("n", "<leader>o", ":CocList --top outline<CR>")
 
-vim.keymap.set("n", "]b", ":bn<CR>")
-vim.keymap.set("n", "[b", ":bp<CR>")
+vim.keymap.set("n", "]b", "<Plug>(cokeline-focus-next)")
+vim.keymap.set("n", "[b", "<Plug>(cokeline-focus-prev)")
+vim.keymap.set("n", "]B", "<Plug>(cokeline-switch-next)")
+vim.keymap.set("n", "[B", "<Plug>(cokeline-switch-prev)")
+vim.keymap.set("n", "<leader>bs", "<Plug>(cokeline-pick-focus)")
+vim.keymap.set("n", "<leader>bc", "<Plug>(cokeline-pick-close)")
 
 
