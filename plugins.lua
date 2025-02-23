@@ -9,8 +9,9 @@ Plug('ms-jpq/chadtree', {branch= 'chad', ['do']= 'python3 -m chadtree deps'})
 Plug 'feline-nvim/feline.nvim'
 Plug 'nvim-lua/plenary.nvim'
 
--- Buffer line
+-- Buffer and status line
 Plug('willothy/nvim-cokeline', { branch= 'main' })
+Plug 'nvim-lualine/lualine.nvim'
 
 -- Terminal 
 Plug 'voldikss/vim-floaterm'
@@ -25,6 +26,7 @@ Plug 'nvim-tree/nvim-web-devicons'
 -- Plug 'kien/ctrlp.vim'
 Plug('nvim-telescope/telescope.nvim', { branch= '0.1.x' }) -- brew insall ripgrip
 Plug('nvim-treesitter/nvim-treesitter', {['do']=':TSUpdate'})
+Plug('folke/trouble.nvim')
 
 -- Git
 Plug 'tpope/vim-fugitive'
@@ -36,22 +38,72 @@ Plug('ms-jpq/coq.artifacts', {branch= 'artifacts'})
 Plug('ms-jpq/coq.thirdparty', {branch= '3p'})
 Plug('neovim/nvim-lspconfig')
 
+--Plug 'vim-test/vim-test'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/nvim-nio'
+Plug 'nvim-neotest/neotest'
+Plug 'nvim-neotest/neotest-python'
+
 -- REPL
-Plug('Vigemus/iron.nvim')
+-- Plug('Vigemus/iron.nvim')
+
+-- Python
+-- Plug 'HallerPatrick/py_lsp.nvim'
 
 vim.call('plug#end')
 
 --- COQ ----
 vim.g.coq_settings = {
-	auto_start = true
+	auto_start = true,
+	-- ["clients.lsp.resolve_timeout"] = 10,
+  -- ["limits.completion_manual_timeout"] = 10,
+	--["limits.completion_auto_timeout"] = 8,
+	--["limits.idle_timeout"] = 10
 }
+
+--[[
+require'py_lsp'.setup {
+	default_venv_name = ".venv"
+}
+--]]
+
+require'evil_lualine'
+
+require'trouble'.setup()
+
+require("neotest").setup({
+  adapters = {
+    require("neotest-python")
+  }
+})
 
 local lsp = require 'lspconfig'
 local coq = require "coq"
 
 lsp.jdtls.setup(coq.lsp_ensure_capabilities()) -- brew install jdtls
 lsp.metals.setup(coq.lsp_ensure_capabilities()) -- brew install coursier; coursier setup; coursier install metals
-lsp.pyright.setup{ settings = {python = {pythonPath = '/opt/homebrew/bin/python3.11'}}}
+-- lsp.pyright.setup{ settings = {python = {pythonPath = '/opt/homebrew/bin/python3.11'}}} -- pip install pyright
+-- lsp.pyright.setup(coq.lsp_ensure_capabilities())
+lsp.pylsp.setup(coq.lsp_ensure_capabilities({
+	cmd = {"pylsp", "-vv"},
+	--cmd = vim.lsp.rpc.connect("127.0.0.1", 2087),
+	settings = {
+		pylsp = {
+			plugins = {
+				rope_autoimport = { enabled = true },
+				rope_completion = { enabled = true },
+				-- pylint = { enabled = false },
+				-- pyflakes = { enabled = false },
+				-- pydocstyle = { enabled = false },
+				-- pycodestyle = { enabled = false },
+				-- autopep8 = { enabled = false },
+				-- flake8 = { enabled = false },
+				-- yapf = { enabled = false },
+				-- mccabe = { enabled = false }
+			}
+		}
+	}
+}))
 
 require('coq_3p') {
 	{ src = "bc", short_name = "MATH", precision = 6 },
@@ -59,6 +111,7 @@ require('coq_3p') {
 	{ src = "repl", sh = "zsh", shell = { p = "perl", n = "node"}, max_lines = 99, deadline = 500, unsafe = { "rm", "poweroff", "mv" } }
 }
 
+vim.lsp.buf.code_action()
 
 --- cokeline ---
 local is_picking_focus = require('cokeline.mappings').is_picking_focus
@@ -135,6 +188,7 @@ require('colorizer').setup()
 vim.cmd[[colorscheme tokyonight]]
 
 --- Iron ----
+--[[
 local iron = require("iron.core")
 
 iron.setup {
@@ -183,10 +237,12 @@ iron.setup {
   ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
 }
 
+
 vim.keymap.set('n', '<space>rs', '<cmd>IronRepl<cr>')
 vim.keymap.set('n', '<space>rr', '<cmd>IronRestart<cr>')
 vim.keymap.set('n', '<space>rf', '<cmd>IronFocus<cr>')
 vim.keymap.set('n', '<space>rh', '<cmd>IronHide<cr>')
+]]
 
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', {noremap = true, silent = false})
 
@@ -196,3 +252,5 @@ vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldnestmax = 3
 vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 0
+
+vim.g['test#strategy'] = "floaterm"
